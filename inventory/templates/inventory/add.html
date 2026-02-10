@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Inventory Manager - Add Product</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>.form-input:focus, .form-textarea:focus {
+        box-shadow: 0 0 0 2px rgba(19, 236, 91, 0.2);
+        border-color: #13ec5b;
+    }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#152e1e] px-6 lg:px-10 py-3 sticky top-0 z-10">
+    <div class="flex items-center gap-4">
+        <div class="size-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary-dark">
+            <span class="material-symbols-outlined text-green-700 dark:text-green-400">inventory_2</span>
+        </div>
+        <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Inventory
+            Manager</h2>
+    </div>
+    <div class="flex flex-1 justify-end gap-8">
+        <nav class="hidden md:flex items-center gap-9">
+            <a class="text-slate-600 dark:text-slate-300 hover:text-green-700 dark:hover:text-primary text-sm font-medium leading-normal transition-colors"
+               href="{% url 'home' %}">Dashboard</a>
+            <a class="text-green-700 dark:text-primary text-sm font-bold leading-normal"
+               href="{% url 'add' %}">Products</a>
+            <a class="text-slate-600 dark:text-slate-300 hover:text-green-700 dark:hover:text-primary text-sm font-medium leading-normal transition-colors"
+               href="#">Orders</a>
+            <a class="text-slate-600 dark:text-slate-300 hover:text-green-700 dark:hover:text-primary text-sm font-medium leading-normal transition-colors"
+               href="#">Reports</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <button class="flex items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-medium transition-colors">
+                <span class="truncate">Log Out</span>
+            </button>
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border border-slate-200 dark:border-slate-700"
+                 data-alt="User profile avatar showing a young man"
+                 style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLhsvZ2KU7nJt5iK43rm6l6uIuD0iJVbxVgWef5m95VcDhrqE5Fo6P6G7Zeis9xcM9HPIojZNwBgUPPGlDCWJeAjrJppW10KMhmjnsUdMapLJIH4I0QpVa_HyZqV3kPCvXkP3b2mjkrQ5GionNc_Xh6VxPVqTEDtQw8H-anGTCx2tIpgwbUKjPxy8JXXCX-EGf_t_jxUapRNVbdNLivwD9zf8QtMCmOa_fY5wzgC-SMkDFjVZFSVLCYH2y5wPFqA8rgeqQhneEu7w");'></div>
+        </div>
+    </div>
+</header>
+<main class="flex-1 flex justify-center items-start py-10 px-4 sm:px-6">
+    <div class="w-full max-w-2xl bg-white dark:bg-[#152e1e] rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div class="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{% if is_edit %}Edit
+                    Product{% else %}Add New Product{% endif %}</h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1"> {% if is_edit %}Fill in the details to edit
+                    item to your
+                    inventory.{% else %}Fill in the details to add a new item to your
+                    inventory.{% endif %}</p>
+            </div>
+            <a aria-label="Close"
+               class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+               href="{% url 'home' %}">
+                <span class="material-symbols-outlined">close</span>
+            </a>
+        </div>
+        <form action="{% if is_edit %}{% url 'edit' product.id %}{% else %}{% url 'add' %}{% endif %}"
+              class="p-8 space-y-8" enctype="multipart/form-data" method="POST">
+            {% csrf_token %}
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    Product Image
+                </label>
+
+                <div class="group relative flex justify-center items-center rounded-lg border-2 border-dashed border-primary/50 hover:border-primary px-6 py-10 bg-slate-50 dark:bg-[#0d1b12] transition-colors cursor-pointer hover:bg-primary/5 min-h-[200px]">
+
+                    <div id="upload-placeholder" class="text-center w-full {% if product.image %}hidden{% endif %}">
+                        <span class="material-symbols-outlined mx-auto h-12 w-12 text-primary" style="font-size: 48px;">photo_camera</span>
+                        <div class="mt-4 flex text-sm leading-6 text-slate-600 dark:text-slate-400 justify-center">
+                            <label class="relative cursor-pointer rounded-md bg-transparent font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-[#0fd650]"
+                                   for="file-upload">
+                                <span>Click to Import Picture</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <img id="image-preview"
+                         src="{% if product.image %}{{ product.image.url }}{% else %}#{% endif %}"
+                         alt="Preview"
+                         class="absolute inset-0 w-full h-full object-contain p-2 rounded-lg pointer-events-none {% if not product.image %}hidden{% endif %}">
+
+                    <input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                           id="file-upload"
+                           name="image"
+                           type="file"
+                           accept="image/*"
+                           onchange="previewImage(this)"/>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200" for="product-name">
+                    Product Name
+                </label>
+                <div class="relative">
+                    <input class="form-input block w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-[#0d1b12] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm py-3 px-4"
+                           id="product-name" name="name" placeholder="e.g., Ergonomic Office Chair" required=""
+                           type="text" value="{{ product.name|default:'' }}"/>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200" for="category">
+                    Category
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="material-symbols-outlined text-slate-400">folder</span>
+                    </div>
+                    <input class="form-input block w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-[#0d1b12] pl-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm py-3 px-4"
+                           id="category" name="category" placeholder="e.g., Electronics, Office Supplies..." required=""
+                           type="text" value="{{ product.category|default:'' }}"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200" for="price">
+                        Price per Unit
+                    </label>
+                    <div class="relative rounded-lg shadow-sm">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <span class="text-primary font-bold sm:text-sm">$</span>
+                        </div>
+                        <input class="form-input block w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-[#0d1b12] pl-8 pr-12 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm py-3"
+                               id="price" min="0" name="price" placeholder="$0" step="0.01" type="number"
+                               value="{{ product.price|default:'' }}"/>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                            <span class="text-slate-500 sm:text-sm" id="price-currency">USD</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200" for="quantity">
+                        Quantity in Stock
+                    </label>
+                    <div class="relative">
+                        <input class="form-input block w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-[#0d1b12] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm py-3 px-4"
+                               id="quantity" min="0" name="quantity" placeholder="0" required="" type="number"
+                               value="{{ product.quantity|default:'' }}"/>
+                        {#                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">#}
+                        {#                            <span class="material-symbols-outlined text-lg">tag</span>#}
+                        {#                        </div>#}
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200" for="description">
+                    Description <span class="text-slate-400 font-normal ml-1">(Optional)</span>
+                </label>
+                <textarea
+                        class="form-textarea block w-full rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-[#0d1b12] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 resize-none"
+                        id="description" name="description"
+                        placeholder="Enter detailed product specifications, features, or notes..."
+                        rows="4">{{ product.description|default:'' }}</textarea>
+            </div>
+            <div class="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-800 mt-2">
+                <a class="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors px-2 py-2"
+                   href="{% url 'home' %}">
+                    ← Back to Inventory
+                </a>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <a class="w-full sm:w-auto text-center px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700"
+                       href="{% url 'home' %}">
+                        Cancel
+                    </a>
+                    <button class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-[#0fd650] text-[#0d1b12] font-bold text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-[#152e1e]"
+                            type="submit">
+                        {% if is_edit %}Update Product{% else %}Save Product{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+<script>
+    function previewImage(input) {
+        // 1. Lấy 2 thẻ HTML cần xử lý
+        var preview = document.getElementById('image-preview');
+        var placeholder = document.getElementById('upload-placeholder');
+
+        // 2. Kiểm tra xem người dùng đã chọn file chưa
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            // 3. Khi đọc file xong thì gán link ảnh vào thẻ img
+            reader.onload = function (e) {
+                preview.src = e.target.result; // Gán đường dẫn ảnh ảo
+                preview.classList.remove('hidden'); // Hiện ảnh
+                placeholder.classList.add('hidden'); // Ẩn icon camera đi
+            }
+
+            reader.readAsDataURL(input.files[0]); // Bắt đầu đọc file
+        }
+    }
+</script>
+</body>
+</html>
