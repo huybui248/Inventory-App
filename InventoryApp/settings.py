@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-un6bc=x67gbx97h4&4s_0twjv24jjr9hfbjdwjp4ifqh1!ip%9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -74,20 +74,27 @@ WSGI_APPLICATION = 'InventoryApp.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'inventory',
-        'USER': 'root',
-        'PASSWORD': 'admin123',
-        'HOST': 'localhost',
-        'PORT': '3307',
-        'OPTIONS': {
-            'charset': 'utf8',
+if os.getenv('PYTHONANYWHERE_DOMAIN'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'inventory',
+            'USER': 'root',
+            'PASSWORD': 'admin123',
+            'HOST': 'localhost',
+            'PORT': '3307',
+            'OPTIONS': {
+                'charset': 'utf8',
+            }
+        }
+    }
 
 
 # Password validation
@@ -125,6 +132,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Nơi URL hiển thị trên trình duyệt (ví dụ: /media/avatars/anh1.jpg)
 MEDIA_URL = '/media/'
 # Nơi lưu file thực tế trong máy tính của bạn
